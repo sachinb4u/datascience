@@ -1,0 +1,192 @@
+
+Introduction
+============================================================
+
+ML Pipeline is a complicated process included:
+• Understanding of business problem
+• Problem formalization
+• Data collecting
+• Data preprocessing
+• Modelling
+• Way to evaluate model in real life
+• Way to deploy model
+
+
+Families of ML algorithms
+• Linear
+	- Logistic Regression
+	- SVM
+• Tree-based
+	- Decision Tree
+	- Random Forest
+	- Gradient Boosted Decision Tress (GBDT)
+		- Microsoft/LightGBM
+• kNN
+• Neural Networks
+
+
+No Free Lunch Theorem
+	“Here is no method which outperforms all others for all tasks”
+	“For every method we can construct a task for which this particular method will not be the best”
+
+Summary
+	• There is no “silver bullet” algorithm
+	• Linear models split space into 2 subspaces
+	• Tree-based methods splits space into boxes
+	• k-NN methods heavy rely on how to measure points “closeness”
+	• Feed-forward NNs produce smooth non-linear decision boundary
+	
+The most powerful methods are Gradient Boosted Decision Trees and Neural Networks.
+But you shouldn’t underestimate the others
+
+
+
+Numerical Features
+============================================================
+
+1. Numeric feature preprocessing is different for tree and non-tree models:
+	a. Tree-based models doesn’t depend on scaling
+	b. Non-tree-based models hugely depend on scaling
+
+2. Most often used preprocessings are:
+	a. MinMaxScaler - to [0,1]
+	b. StandardScaler - to mean==0, std==1
+	c. Rank - sets spaces between sorted values to be equal
+	d. np.log(1+x) and np.sqrt(1+x)	
+
+3. Feature generation is powered by:
+	a. Prior knowledge
+	b. Exploratory data analysis
+
+
+Categorical and ordinal features
+============================================================
+
+Categorical features
+
+1. Values in ordinal features are sorted in some meaningful order
+	e.g Ticket Class: 1,2,3
+	Driver's License: A, B, C, D
+	Education: kindergarden, school, undergraduate, bachelor, master, doctoral
+
+2. Label encoding maps categories to numbers
+	1. Alphabetical (sorted)
+		[S,C,Q] -> [2, 1, 3]
+		sklearn.preprocessing.LabelEncoder
+	2. Order of appearance
+		[S,C,Q] -> [1, 2, 3]
+		Pandas.factorize
+
+3. Frequency encoding maps categories to their frequencies
+	[S,C,Q] -> [0.5, 0.3, 0.2]
+	encoding = titanic.groupby(‘Embarked’).size()
+	encoding = encoding/len(titanic)
+	titanic[‘enc’] = titanic.Embarked.map(encoding)
+	from scipy.stats import rankdata
+
+4. Label and Frequency encodings are often used for treebased models
+
+5. One-hot encoding is often used for non-tree-based models
+	pandas.get_dummies, 
+	sklearn.preprocessing.OneHotEncoder
+
+6. Interactions of categorical features can help linear models and KNN
+
+
+Datetime and coordinates
+============================================================
+
+Datetime
+	1. Periodicity
+		Day number in week, month, season, year 
+		second, minute, hour.
+
+	2. Time since
+		a. Row-independent moment
+			For example: since 00:00:00 UTC, 1 January 1970;
+		b. Row-dependent important moment
+			Number of days left until next holidays/ time passed after last holiday.
+
+	3. Difference between dates
+		datetime_feature_1 - datetime_feature_2
+
+Coordinates
+	a. Interesting places from train/test data or additional data
+	b. Centers of clusters
+	c. Aggregated statistics
+
+
+Missing Values
+============================================================
+
+Fillna approaches
+	1. -999, -1, etc
+	2. mean, median
+	3. Reconstruct value
+
+Treating values which do not present in train data
+	1. The choice of method to fill NaN depends on the situation
+	2. Usual way to deal with missing values is to replace them with -999, mean or median
+	3. Missing values already can be replaced with something by organizers
+	4. Binary feature “isnull” can be beneficial
+	5. In general, avoid filling nans before feature generation
+	6. Xgboost can handle NaN
+
+
+Feature extraction from texts and images
+============================================================
+
+Pipeline of applying BOW (BagOfWords)
+
+1. Preprocessing:
+	Lowercase
+
+	Stemming
+		democracy, democratic, and democratization -> democr
+		Saw -> s
+
+	lemmatization
+		democracy, democratic, and democratization -> democracy
+		Saw -> see or saw (depending on context)
+
+	stopwords
+		Articles or prepositions
+		Very common words
+
+	sklearn.feature_extraction.text.CountVectorizer
+
+2. Bag of words:
+	Ngrams can help to use local context
+
+	sklearn.feature_extraction.text.CountVectorizer:
+	Ngram_range, analyzer
+
+3. Postprocessing: TFiDF
+	Term frequency
+	tf = 1 / x.sum(axis=1) [:,None]
+	x = x * tf
+
+	Inverse Document Frequency
+	idf = np.log(x.shape[0] / (x > 0).sum(0))
+	x = x * idf
+
+	sklearn.feature_extraction.text.TfidfVectorizer
+
+
+BOW and w2v comparison
+
+1. Bag of words
+	a. Very large vectors
+	b. Meaning of each value in vector is known
+
+2. Word2vec
+	a. Relatively small vectors
+	b. Values in vector can be interpreted only in some cases
+	c. The words with similar meaning often have similar embeddings
+
+
+Images
+	a. Features can be extracted from different layers
+	b. Careful choosing of pretrained network can help
+	c. Finetuning allows to refine pretrained models
+	d. Data augmentation can improve the model
