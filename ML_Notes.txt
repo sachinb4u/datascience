@@ -198,3 +198,20 @@ Codeathon References
 
 - Tutorial to deploy Machine Learning models in Production as APIs (using Flask)
   https://www.analyticsvidhya.com/blog/2017/09/machine-learning-models-as-apis-using-flask/	
+
+
+
+K-NN
+LinearRegression
+LinearSVC
+SVM
+Ridge 
+Lasso
+Naive Bayes
+Random Forests
+
+DecisionTree
+Gradient Boosted Decision Trees
+Neural Network
+Deep Learning
+  
